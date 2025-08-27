@@ -1,4 +1,13 @@
 import type { MenuItem } from "@/components/Layout/Navbar";
+import AllUsers from "@/pages/Admin/AllUsers";
+import AssignParcel from "@/pages/Admin/AssignParcel";
+import GetAllParcels from "@/pages/Admin/GetAllParcels";
+import GetSingleParcel from "@/pages/Admin/GetSingleParcel";
+import GetSingleUser from "@/pages/Admin/GetSingleUser";
+import UpdateParcelStatus from "@/pages/Admin/UpdateParcelStatus";
+import UpdateUser from "@/pages/Admin/UpdateUser";
+import Home from "@/pages/Public/Home";
+import Me from "@/pages/Public/Me";
 import {
   Scan,
   ShoppingBag,
@@ -9,8 +18,14 @@ import {
   PencilRuler,
 } from "lucide-react";
 export const adminSidebarItems: MenuItem[] = [
-  { title: "Home", url: "#" },
-  { title: "Me", url: "#" },
+  {
+    title: "Home",
+    url: "/public/home",
+  },
+  {
+    title: "Me",
+    url: "/user/me",
+  },
   {
     title: "Parcel",
     url: "#",
@@ -19,25 +34,29 @@ export const adminSidebarItems: MenuItem[] = [
         title: "Get All Parcels",
         description: "",
         icon: <ShoppingBag className="size-5 shrink-0" />,
-        url: "#",
+        url: "/admin/get-all-parcels",
+        Component: GetAllParcels,
       },
       {
         title: "Update Parcel Status",
         description: "",
         icon: <PencilOff className="size-5 shrink-0" />,
-        url: "#",
+        url: "/admin/update-parcel-status",
+        Component: UpdateParcelStatus,
       },
       {
         title: "Get Single Parcel",
         description: "",
         icon: <FileSearch className="size-5 shrink-0" />,
-        url: "#",
+        url: "/admin/get-single-parcel",
+        Component: GetSingleParcel,
       },
       {
         title: "Assign Parcel",
         description: "",
         icon: <UserRoundPlus className="size-5 shrink-0" />,
-        url: "#",
+        url: "/admin/assign-parcel",
+        Component: AssignParcel,
       },
     ],
   },
@@ -49,25 +68,22 @@ export const adminSidebarItems: MenuItem[] = [
         title: "All Users",
         description: "",
         icon: <UsersIcon className="size-5 shrink-0" />,
-        url: "#",
+        url: "/admin/all-users",
+        Component: AllUsers,
       },
       {
         title: "Get Single User",
         description: "",
         icon: <Scan className="size-5 shrink-0" />,
-        url: "#",
+        url: "/admin/get-single-user",
+        Component: GetSingleUser,
       },
       {
         title: "Update User",
         description: "",
         icon: <PencilRuler className="size-5 shrink-0" />,
-        url: "#",
-      },
-      {
-        title: "Update User",
-        description: "",
-        icon: <PencilRuler className="size-5 shrink-0" />,
-        url: "#",
+        url: "/admin/update-user",
+        Component: UpdateUser,
       },
     ],
   },
