@@ -1,7 +1,10 @@
+import RegisterForm from "@/components/modules/Authentication/RegisterForm";
+
+
 export default function Register() {
   return (
-    <div>
-      <h1>This is Register Component</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center">
+    <RegisterForm/>
     </div>
-  );
+  )
 }

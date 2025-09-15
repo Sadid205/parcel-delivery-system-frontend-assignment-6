@@ -1,18 +1,16 @@
 import App from "@/App";
+import ForgotPassword from "@/pages/Public/ForgotPassword";
 import Home from "@/pages/Public/Home";
 import Login from "@/pages/Public/Login";
 import Me from "@/pages/Public/Me";
 import Register from "@/pages/Public/Register";
+import ResetPassword from "@/pages/Public/ResetPassword";
 import Unauthorized from "@/pages/Public/Unauthorized";
 import Verify from "@/pages/Public/Verify";
-import CancelParcel from "@/pages/User/CancelParcel";
-import CreateParcel from "@/pages/User/CreateParcel";
-import History from "@/pages/User/History";
-import TrackParcel from "@/pages/User/TrackParcel";
 import { generateRoutes } from "@/utils/generateRoutes";
 import { createBrowserRouter, Navigate } from "react-router";
-import { deliveryManSidebarItems } from "./deliveryManSidebarItems";
 import { adminSidebarItems } from "./adminSidebaritems";
+import { deliveryManSidebarItems } from "./deliveryManSidebarItems";
 import { userSidebarItems } from "./userSidebarItems";
 
 export const router = createBrowserRouter([
@@ -43,6 +41,14 @@ export const router = createBrowserRouter([
       {
         path: "verify",
         Component: Verify,
+      },
+      {
+        path: "forgot-password",
+        Component: ForgotPassword,
+      },
+      {
+        path: "reset-password",
+        Component: ResetPassword,
       },
       {
         path: "unauthorized",

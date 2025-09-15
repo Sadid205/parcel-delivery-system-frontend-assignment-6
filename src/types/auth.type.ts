@@ -1,0 +1,31 @@
+export interface IRegister {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface ILogin {
+  email: string;
+  password: string;
+}
+export interface ISendOtp {
+  email: string;
+}
+
+export interface IVerifyOtp {
+  email: string;
+  otp: string;
+}
+
+export interface ILogin {
+  email: string;
+  password: string;
+}
+
+export interface IForgotPassword {
+  email: string;
+}
+export interface IResetPassword {
+  password: string;
+  id: string;
+}
