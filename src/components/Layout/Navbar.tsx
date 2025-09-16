@@ -1,5 +1,6 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Menu } from "lucide-react";
 
+import Logo from "@/assets/icons/Logo";
 import {
   Accordion,
   AccordionContent,
@@ -22,12 +23,19 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Logo from "@/assets/icons/Logo";
-import { ModeToggler } from "./ModeToggler";
+import {
+  authApi,
+  useLogoutMutation,
+  useUserInfoQuery,
+} from "@/redux/features/auth/auth.api";
+import { useAppDispatch } from "@/redux/hooks";
 import { getSidebarItems } from "@/utils/getSidebarItems";
 import type { ComponentType } from "react";
 import { Link } from "react-router";
-const menu = getSidebarItems("SUPER_ADMIN");
+import { toast } from "sonner";
+import GlobalLoader from "./GlobalLoader";
+import { ModeToggler } from "./ModeToggler";
+
 export interface MenuItem {
   title: string;
   url: string;
@@ -68,6 +76,24 @@ export default function Navbar({
     signup: { title: "Sign up", url: "/public/register" },
   },
 }: Navbar1Props) {
+  const { data, isLoading } = useUserInfoQuery(undefined);
+  const menu = getSidebarItems(data?.data?.role);
+  const dispatch = useAppDispatch();
+  const [logout] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    const toastId = toast.loading("Logout is on process...");
+    try {
+      const res = await logout(undefined);
+      console.log(res);
+      toast.success("You have successfully logged out", { id: toastId });
+      dispatch(authApi.util.resetApiState());
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong", { id: toastId });
+    }
+  };
+  console.log(data);
   return (
     <section className="py-4">
       <div className="container m-auto">
@@ -91,12 +117,21 @@ export default function Navbar({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link to={auth.login.url}>{auth.login.title}</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to={auth.signup.url}>{auth.signup.title}</Link>
-            </Button>
+            {data?.data?.email && (
+              <Button onClick={logoutHandler} className="cursor-pointer">
+                {isLoading ? <GlobalLoader /> : "Logout"}
+              </Button>
+            )}
+            {!data?.data?.email && (
+              <>
+                <Button asChild variant="outline">
+                  <Link to={auth.login.url}>{auth.login.title}</Link>
+                </Button>
+                <Button asChild>
+                  <Link to={auth.signup.url}>{auth.signup.title}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
 
@@ -133,12 +168,24 @@ export default function Navbar({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <Link to={auth.login.url}>{auth.login.title}</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link to={auth.signup.url}>{auth.signup.title}</Link>
-                    </Button>
+                    {data?.data?.email && (
+                      <Button
+                        onClick={logoutHandler}
+                        className="cursor-pointer"
+                      >
+                        {isLoading ? <GlobalLoader /> : "Logout"}
+                      </Button>
+                    )}
+                    {!data?.data?.email && (
+                      <>
+                        <Button asChild variant="outline">
+                          <Link to={auth.login.url}>{auth.login.title}</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link to={auth.signup.url}>{auth.signup.title}</Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

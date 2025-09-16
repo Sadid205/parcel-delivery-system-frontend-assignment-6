@@ -22,12 +22,13 @@ import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import type { IError, ILoginResponse, IResponse } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export default function LoginForm() {
   const [login, { isLoading }] = useLoginMutation();
+  const navigate = useNavigate();
   const loginSchema = z.object({
     email: z.email({ error: "Please enter a valid email" }),
     password: z
@@ -45,7 +46,8 @@ export default function LoginForm() {
         data
       ).unwrap()) as IResponse<ILoginResponse> | null;
       console.log(res);
-      toast.success(res?.message, { id: toastId });
+      toast.success("Login Successful", { id: toastId });
+      navigate("/");
     } catch (err) {
       const error = err as IError;
       toast.error(error.data?.message, { id: toastId });
