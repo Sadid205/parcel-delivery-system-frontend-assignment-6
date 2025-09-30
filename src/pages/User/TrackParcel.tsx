@@ -17,8 +17,17 @@ import { useState } from "react";
 const formSchema = z.object({
   tracking_number:z.string().regex(/^TRK-\d+(?:-\d+)?$/,{message:"Invalid tracking number format."})
 })
+type Parcel = {
+  trackingEvents:Array<{
+  status: string
+  paid_status: string
+  _id: string
+  createdAt: string
+  updatedAt: string
+}>
+}
 export default function TrackParcel() {
-  const [trackedParcel,setTrackedParcel] = useState("")
+  const [trackedParcel,setTrackedParcel] = useState<Parcel | null>(null)
   const [trackParcel,{isLoading}] = useLazyTrackParcelQuery()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver:zodResolver(formSchema),
@@ -28,7 +37,7 @@ export default function TrackParcel() {
   })
   
   const onSubmit = async(data:z.infer<typeof formSchema>)=>{
-    setTrackedParcel("")
+    setTrackedParcel(null)
     
     const toastId = toast.loading("Trying to track parcel ....")
     try{
@@ -46,7 +55,7 @@ export default function TrackParcel() {
       toast.error(err?.data?.message ?? "Something went wrong!",{id:toastId})
     }
   }
-
+console.log(trackedParcel)
   return (
     <div className=" max-w-screen flex min-h-screen flex-col gap-6 justify-center items-center m-auto">
       {trackedParcel &&   <div className="w-full justify-end items-start gap-8 inline-flex">
