@@ -1,3 +1,4 @@
+import GlobalLoader from "@/components/Layout/GlobalLoader";
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,11 +20,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useLazyGetHistoryQuery } from "@/redux/features/parcel/parcel.api";
+import { useCancelParcelMutation, useLazyGetHistoryQuery } from "@/redux/features/parcel/parcel.api";
 import type { IHistory } from "@/types/parcel.type";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function History() {
+  const [cancel,{isLoading:cancelLoading}] = useCancelParcelMutation()
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,
@@ -42,6 +45,18 @@ export default function History() {
     (acc: number, curr: IHistory) => acc + curr.fees,
     0
   );
+  const cancelHandler  = async(tracking_number:string)=>{
+    const toastId = toast.loading("Canceling parcel...")
+    try{
+      const res = await cancel(tracking_number).unwrap()
+      console.log(res);
+      toast.success("Parcel canceled successfully",{id:toastId})
+      fetchHistory(query)
+    }catch(err){
+      console.log(err);
+      toast.success("Failed to cancel!",{id:toastId})
+    }
+  }
   return (
     <>
       {isLoading ? (
@@ -79,7 +94,7 @@ export default function History() {
                 <TableHead>Receiver Phone</TableHead>
                 <TableHead>Receiver Email</TableHead>
                 <TableHead>Charge</TableHead>
-                <TableHead className="">Change Status</TableHead>
+                <TableHead className="">Cancel Parcel</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -115,10 +130,11 @@ export default function History() {
                     <TableCell className="">৳ {history.fees}</TableCell>
                     <TableCell className="">
                       <Button
+                      onClick={()=>cancelHandler(history.tracking_number)}
                         disabled={history.current_status.status != "REQUESTED"}
                         className="bg-green-500 cursor-pointer"
                       >
-                        Change Status
+                       {cancelLoading?<GlobalLoader/>:"Cancel"}
                       </Button>
                     </TableCell>
                   </TableRow>

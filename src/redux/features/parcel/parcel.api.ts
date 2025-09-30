@@ -39,6 +39,19 @@ export const parcelApi = baseApi.injectEndpoints({
       },
       providesTags: ["PARCEL"],
     }),
+    cancelParcel:builder.mutation({
+      query:(tracking_number:string)=>({
+        url:`/parcel/cancel/${tracking_number}`,
+        method:"GET",
+
+      })
+    }),
+    trackParcel:builder.query({
+      query:(tracking_number:string)=>({
+        url:`/parcel/${tracking_number}`,
+        method:"GET"
+      })
+    })
   }),
 });
 
@@ -47,4 +60,6 @@ export const {
   useUpdateParcelMutation,
   useGetHistoryQuery,
   useLazyGetHistoryQuery,
+  useCancelParcelMutation,
+  useLazyTrackParcelQuery
 } = parcelApi;
