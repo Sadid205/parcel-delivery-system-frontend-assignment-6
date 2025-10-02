@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCancelParcelMutation, useLazyGetHistoryQuery } from "@/redux/features/parcel/parcel.api";
+import { useCancelParcelMutation, useLazyGetParcelQuery } from "@/redux/features/parcel/parcel.api";
 import type { IHistory } from "@/types/parcel.type";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -33,15 +33,15 @@ export default function History() {
     limit: 10,
   });
 
-  const [fetchHistory, { data: histories, isLoading }] =
-    useLazyGetHistoryQuery();
+  const [fetchParcel, { data: parcels, isLoading }] =
+    useLazyGetParcelQuery();
   useEffect(() => {
-    fetchHistory(query);
+    fetchParcel(query);
   }, []);
 
   // console.log(histories, query);
 
-  const total = histories?.data?.reduce(
+  const total = parcels?.data?.reduce(
     (acc: number, curr: IHistory) => acc + curr.fees,
     0
   );
@@ -51,7 +51,7 @@ export default function History() {
       const res = await cancel(tracking_number).unwrap()
       console.log(res);
       toast.success("Parcel canceled successfully",{id:toastId})
-      fetchHistory(query)
+      fetchParcel(query)
     }catch(err){
       console.log(err);
       toast.success("Failed to cancel!",{id:toastId})
@@ -73,7 +73,7 @@ export default function History() {
             />
             <Button
               onClick={() => {
-                fetchHistory(query);
+                fetchParcel(query);
               }}
             >
               Search
@@ -98,7 +98,7 @@ export default function History() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {histories?.data?.map((history: IHistory) => {
+              {parcels?.data?.map((history: IHistory) => {
                 return (
                   <TableRow key={history.tracking_number}>
                     <TableCell className="font-medium">
@@ -160,12 +160,12 @@ export default function History() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      histories?.meta?.page > 1
+                      parcels?.meta?.page > 1
                         ? prevState.page - 1
                         : prevState.page,
                   };
 
-                  fetchHistory(newQuery);
+                  fetchParcel(newQuery);
                   return newQuery;
                 });
               }}
@@ -182,11 +182,11 @@ export default function History() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      histories?.meta?.totalPage > prevState.page
+                      parcels?.meta?.totalPage > prevState.page
                         ? prevState.page + 1
                         : prevState.page,
                   };
-                  fetchHistory(newQuery);
+                  fetchParcel(newQuery);
 
                   return newQuery;
                 });

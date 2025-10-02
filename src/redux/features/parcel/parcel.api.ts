@@ -15,9 +15,36 @@ export const parcelApi = baseApi.injectEndpoints({
       { id: string; parcelInfo: IUpdateParcel }
     >({
       query: ({ id, parcelInfo }) => ({
-        url: `{/parcel/${id}}`,
+        url: `/parcel/${id}`,
         method: "PATCH",
         data: parcelInfo,
+      }),
+    }),
+
+    updateParcelStatus: builder.mutation<
+      null,
+      {
+        tracking_number: string;
+        parcel_status: {
+          status:
+            | "REQUESTED"
+            | "APPROVED"
+            | "DISPATCHED"
+            | "IN_TRANSIT"
+            | "DELIVERED"
+            | "CANCELLED"
+            | "BLOCKED"
+            | "RETURNED"
+            | "RESCHEDULED";
+          paid_status: "PAID" | "UNPAID";
+          delivery_date: string;
+        };
+      }
+    >({
+      query: ({ tracking_number, parcel_status }) => ({
+        url: `/parcel/update-status/${tracking_number}`,
+        method: "PATCH",
+        data: parcel_status,
       }),
     }),
     getHistory: builder.query({
@@ -39,19 +66,37 @@ export const parcelApi = baseApi.injectEndpoints({
       },
       providesTags: ["PARCEL"],
     }),
-    cancelParcel:builder.mutation({
-      query:(tracking_number:string)=>({
-        url:`/parcel/cancel/${tracking_number}`,
-        method:"GET",
+    getParcel: builder.query({
+      query: ({ searchTerm, page, limit }) => {
+        let url = `/parcel`;
 
-      })
+        const params = new URLSearchParams();
+        if (searchTerm && searchTerm.trim() !== "")
+          params.append("searchTerm", searchTerm);
+        if (page != null) params.append("page", page.toString());
+        if (limit != null) params.append("limit", limit.toString());
+        if ([...params].length > 0) {
+          url += `?${params.toString()}`;
+        }
+        return {
+          url,
+          method: "GET",
+        };
+      },
+      providesTags: ["PARCEL"],
     }),
-    trackParcel:builder.query({
-      query:(tracking_number:string)=>({
-        url:`/parcel/${tracking_number}`,
-        method:"GET"
-      })
-    })
+    cancelParcel: builder.mutation({
+      query: (tracking_number: string) => ({
+        url: `/parcel/cancel/${tracking_number}`,
+        method: "GET",
+      }),
+    }),
+    trackParcel: builder.query({
+      query: (tracking_number: string) => ({
+        url: `/parcel/${tracking_number}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -61,5 +106,8 @@ export const {
   useGetHistoryQuery,
   useLazyGetHistoryQuery,
   useCancelParcelMutation,
-  useLazyTrackParcelQuery
+  useLazyTrackParcelQuery,
+  useGetParcelQuery,
+  useLazyGetParcelQuery,
+  useUpdateParcelStatusMutation,
 } = parcelApi;
