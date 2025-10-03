@@ -62,58 +62,33 @@ import {
 } from "@/components/ui/table";
 
 import { useLazyAllUsersQuery } from "@/redux/features/user/user.api";
-import type { IHistory } from "@/types/parcel.type";
+
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import GlobalLoader from "@/components/Layout/GlobalLoader";
 import { DateTime } from "luxon";
-export default function allUsers() {
+import { useUpdateParcelStatusMutation } from "@/redux/features/parcel/parcel.api";
+import type { IUser } from "@/types/user.type";
+export default function AllUsers() {
   const [updateParcelStatus, { isLoading: updateStatusLoading }] =
     useUpdateParcelStatusMutation();
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,
     limit: 10,
   });
 
-  const [fetchUsers, { data: allUser, isLoading }] = useLazyAllUsersQuery();
+  const [fetchUsers, { data: allUsersData, isLoading }] =
+    useLazyAllUsersQuery();
   useEffect(() => {
     fetchUsers(query);
   }, []);
 
-  // console.log(histories, query);
+  console.log(allUsersData, query);
 
-  // const cancelHandler  = async(tracking_number:string)=>{
-  //   const toastId = toast.loading("Canceling parcel...")
-  //   try{
-  //     const res = await cancel(tracking_number).unwrap()
-  //     console.log(res);
-  //     toast.success("Parcel canceled successfully",{id:toastId})
-  //     fetchHistory(query)
-  //   }catch(err){
-  //     console.log(err);
-  //     toast.success("Failed to cancel!",{id:toastId})
-  //   }
-  // }
-  const parcelStatus = [
-    "REQUESTED",
-    "APPROVED",
-    "DISPATCHED",
-    "IN_TRANSIT",
-    "DELIVERED",
-    "CANCELLED",
-    "BLOCKED",
-    "RETURNED",
-    "RESCHEDULED",
-  ] as const;
-  const paidStatus = ["PAID", "UNPAID"] as const;
-  const FormSchema = z.object({
-    id: z.string(),
-    status: z.enum(parcelStatus),
-    paid_status: z.enum(paidStatus),
-    delivery_date: z.date(),
-  });
+  const FormSchema = z.object({});
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -164,78 +139,62 @@ export default function allUsers() {
             />
             <Button
               onClick={() => {
-                fetchParcels(query);
+                fetchUsers(query);
               }}
             >
               Search
             </Button>
           </div>
           <Table>
-            <TableCaption>A list of your recent historys.</TableCaption>
+            <TableCaption>A list of your recent users.</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Tracking Number</TableHead>
+                <TableHead className="w-[100px]">User Id</TableHead>
                 <TableHead>Created At</TableHead>
-                <TableHead>Parcel Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Paid Status</TableHead>
-                <TableHead>Delivery Date</TableHead>
-                <TableHead>Weight</TableHead>
-                <TableHead>Receiver Address</TableHead>
-                <TableHead>Receiver Phone</TableHead>
-                <TableHead>Receiver Email</TableHead>
-                <TableHead>Charge</TableHead>
-                <TableHead className="">Cancel Parcel</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Verified Status</TableHead>
+                <TableHead>Deleted Status</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Active Status</TableHead>
+                <TableHead>Assigned Parcels</TableHead>
+                <TableHead className="">Update User</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allParcel?.data?.map((history: IHistory) => {
+              {allUsersData?.data?.map((user: IUser) => {
                 return (
-                  <TableRow key={history.tracking_number}>
-                    <TableCell className="font-medium">
-                      {history.tracking_number}
-                    </TableCell>
-                    <TableCell>{history.createdAt}</TableCell>
-                    <TableCell className="font-medium">
-                      {history.parcel_type}
-                    </TableCell>
-                    <TableCell className="">
-                      {history.current_status.status}
-                    </TableCell>
-                    <TableCell className="">
-                      {history.current_status.paid_status}
-                    </TableCell>
-                    <TableCell className="">
-                      {new Date(history.delivery_date).toLocaleString("en", {
+                  <TableRow key={user._id}>
+                    <TableCell className="font-medium">{user._id}</TableCell>
+                    <TableCell>
+                      {new Date(user.createdAt).toLocaleString("en", {
                         timeZone: "Asia/Dhaka",
                         dateStyle: "medium",
                         timeStyle: "short",
                       })}
                     </TableCell>
-                    <TableCell className="">{history.weight} gm</TableCell>
+                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell className="">{user.role}</TableCell>
                     <TableCell className="">
-                      {history.receiver.address}
+                      {user.isVerified ? "Verified" : "Not Verified"}
                     </TableCell>
-                    <TableCell className="">{history.receiver.phone}</TableCell>
-                    <TableCell className="">{history.receiver.email}</TableCell>
-                    <TableCell className="">৳ {history.fees}</TableCell>
                     <TableCell className="">
-                      <Dialog
-                        onOpenChange={(open) => {
-                          if (open) {
-                            form.reset({
-                              id: history.tracking_number,
-                              status: history.current_status
-                                .status as (typeof parcelStatus)[number],
-                              paid_status: history.current_status
-                                .paid_status as (typeof paidStatus)[number],
-                              delivery_date: undefined,
-                            });
-                          }
-                        }}
-                      >
+                      {user.isDeleted ? "Deleted" : "Not Deleted"}
+                    </TableCell>
+                    <TableCell className="">{user.email}</TableCell>
+                    <TableCell className="">
+                      {user.isActive ? "Active" : "Disabled"}
+                    </TableCell>
+                    <TableCell className="">
+                      <Dialog open={open2} onOpenChange={setOpen2}>
                         <DialogTrigger asChild>
-                          <Button variant="outline">Change Status</Button>
+                          <Button
+                            className="cursor-pointer"
+                            // disabled={user.role != "DELIVERY_MAN"}
+                            variant="outline"
+                          >
+                            See
+                          </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[625px]">
                           <Form {...form}>
@@ -244,100 +203,43 @@ export default function allUsers() {
                                 <DialogTitle>Change Parcel Status</DialogTitle>
                               </DialogHeader>
                               <div className="flex mt-4 justify-between">
-                                <FormField
-                                  control={form.control}
-                                  name="status"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                      >
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select a status" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          {parcelStatus.map((st, index) => (
-                                            <SelectItem key={index} value={st}>
-                                              {st}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                    </FormItem>
+                                <h1>Hello</h1>
+                              </div>
+                              <DialogFooter className="mt-4">
+                                <DialogClose asChild>
+                                  <Button type="button" variant="outline">
+                                    Cancel
+                                  </Button>
+                                </DialogClose>
+                                <Button
+                                  type="submit"
+                                  className="cursor-pointer"
+                                >
+                                  {updateStatusLoading ? (
+                                    <GlobalLoader />
+                                  ) : (
+                                    "Update Status"
                                   )}
-                                />
-
-                                <FormField
-                                  control={form.control}
-                                  name="paid_status"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                      >
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select a paid status" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          {paidStatus.map((st, index) => (
-                                            <SelectItem key={index} value={st}>
-                                              {st}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="delivery_date"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <Popover
-                                        open={open}
-                                        onOpenChange={setOpen}
-                                      >
-                                        <PopoverTrigger asChild>
-                                          <Button
-                                            variant="outline"
-                                            id="date"
-                                            className="w-48 justify-between font-normal"
-                                          >
-                                            {field.value
-                                              ? DateTime.fromJSDate(field.value)
-                                                  .setZone("Asia/Dhaka")
-                                                  .toFormat("yyyy-MM-dd")
-                                              : "Select delivery date"}
-                                            <ChevronDownIcon />
-                                          </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent
-                                          className="w-auto overflow-hidden p-0"
-                                          align="start"
-                                        >
-                                          <Calendar
-                                            mode="single"
-                                            selected={field.value}
-                                            captionLayout="dropdown"
-                                            onSelect={(date) => {
-                                              field.onChange(date);
-                                              setOpen(false);
-                                            }}
-                                          />
-                                        </PopoverContent>
-                                      </Popover>
-                                    </FormItem>
-                                  )}
-                                />
+                                </Button>
+                              </DialogFooter>
+                            </form>
+                          </Form>
+                        </DialogContent>
+                      </Dialog>
+                    </TableCell>
+                    <TableCell className="">
+                      <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">Update User</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[625px]">
+                          <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)}>
+                              <DialogHeader>
+                                <DialogTitle>Change Parcel Status</DialogTitle>
+                              </DialogHeader>
+                              <div className="flex mt-4 justify-between">
+                                <h1>Hello</h1>
                               </div>
                               <DialogFooter className="mt-4">
                                 <DialogClose asChild>
@@ -367,8 +269,8 @@ export default function allUsers() {
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell colSpan={10}>Total</TableCell>
-                <TableCell className="">{total} Taka</TableCell>
+                {/* <TableCell colSpan={10}>Total</TableCell> */}
+                {/* <TableCell className=""> Taka</TableCell> */}
               </TableRow>
             </TableFooter>
           </Table>
@@ -384,12 +286,12 @@ export default function allUsers() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      allParcel?.meta?.page > 1
+                      allUsers?.meta?.page > 1
                         ? prevState.page - 1
                         : prevState.page,
                   };
 
-                  fetchParcels(newQuery);
+                  fetchUsers(newQuery);
                   return newQuery;
                 });
               }}
@@ -406,11 +308,11 @@ export default function allUsers() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      allParcel?.meta?.totalPage > prevState.page
+                      allUsers?.meta?.totalPage > prevState.page
                         ? prevState.page + 1
                         : prevState.page,
                   };
-                  fetchParcels(newQuery);
+                  fetchUsers(newQuery);
 
                   return newQuery;
                 });
