@@ -46,6 +46,7 @@ export const parcelApi = baseApi.injectEndpoints({
         method: "PATCH",
         data: parcel_status,
       }),
+      invalidatesTags: ["PARCEL"],
     }),
     getHistory: builder.query({
       query: ({ searchTerm, page, limit }) => {

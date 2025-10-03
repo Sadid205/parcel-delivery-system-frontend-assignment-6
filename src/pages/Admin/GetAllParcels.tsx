@@ -63,6 +63,7 @@ import {
 
 import {
   useLazyGetHistoryQuery,
+  useLazyGetParcelQuery,
   useUpdateParcelStatusMutation,
 } from "@/redux/features/parcel/parcel.api";
 import type { IHistory } from "@/types/parcel.type";
@@ -74,22 +75,21 @@ export default function GetAllParcels() {
   const [updateParcelStatus, { isLoading: updateStatusLoading }] =
     useUpdateParcelStatusMutation();
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(undefined);
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,
     limit: 10,
   });
 
-  const [fetchHistory, { data: histories, isLoading }] =
-    useLazyGetHistoryQuery();
+  const [fetchParcels, { data: allParcel, isLoading }] =
+    useLazyGetParcelQuery();
   useEffect(() => {
-    fetchHistory(query);
+    fetchParcels(query);
   }, []);
 
   // console.log(histories, query);
 
-  const total = histories?.data?.reduce(
+  const total = allParcel?.data?.reduce(
     (acc: number, curr: IHistory) => acc + curr.fees,
     0
   );
@@ -145,13 +145,15 @@ export default function GetAllParcels() {
       console.log(res);
       if (res?.error?.data?.success === false) {
         toast.error(res?.error?.data?.message, { id: toastId });
-      } else if (res.data.success === true) {
+      } else if (res?.data?.success === true) {
         toast.success(res?.data?.message, { id: toastId });
       } else {
         toast.error("Something went wrong!", { id: toastId });
       }
+      setOpen(false);
     } catch (err: any) {
       console.log(err);
+      setOpen(false);
     }
   };
 
@@ -171,7 +173,7 @@ export default function GetAllParcels() {
             />
             <Button
               onClick={() => {
-                fetchHistory(query);
+                fetchParcels(query);
               }}
             >
               Search
@@ -196,7 +198,7 @@ export default function GetAllParcels() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {histories?.data?.map((history: IHistory) => {
+              {allParcel?.data?.map((history: IHistory) => {
                 return (
                   <TableRow key={history.tracking_number}>
                     <TableCell className="font-medium">
@@ -391,12 +393,12 @@ export default function GetAllParcels() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      histories?.meta?.page > 1
+                      allParcel?.meta?.page > 1
                         ? prevState.page - 1
                         : prevState.page,
                   };
 
-                  fetchHistory(newQuery);
+                  fetchParcels(newQuery);
                   return newQuery;
                 });
               }}
@@ -413,11 +415,11 @@ export default function GetAllParcels() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      histories?.meta?.totalPage > prevState.page
+                      allParcel?.meta?.totalPage > prevState.page
                         ? prevState.page + 1
                         : prevState.page,
                   };
-                  fetchHistory(newQuery);
+                  fetchParcels(newQuery);
 
                   return newQuery;
                 });
