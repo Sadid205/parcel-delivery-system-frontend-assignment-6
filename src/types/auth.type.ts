@@ -29,3 +29,23 @@ export interface IResetPassword {
   password: string;
   id: string;
 }
+
+// IUser
+export interface IUser {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  isDeleted: boolean;
+  isActive: string;
+  isVerified: boolean;
+  auths: Auth[];
+  assignedParcels: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Auth {
+  provider: string;
+  providerId: string;
+}

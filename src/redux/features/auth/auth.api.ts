@@ -5,6 +5,7 @@ import type {
   IRegister,
   IResetPassword,
   ISendOtp,
+  IUser,
   IVerifyOtp,
 } from "@/types/auth.type";
 
@@ -63,7 +64,7 @@ export const authApi = baseApi.injectEndpoints({
         },
       }),
     }),
-    userInfo: builder.query({
+    userInfo: builder.query<IUser, null>({
       query: () => ({
         url: "/user/me",
         method: "GET",

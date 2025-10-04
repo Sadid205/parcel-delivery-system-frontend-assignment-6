@@ -70,15 +70,15 @@ const defaultLegalLinks = [
 
 export default function Footer({
   logo = {
-    url: "https://www.shadcnblocks.com",
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
+    url: "",
+    src: "",
     alt: "logo",
-    title: "Shadcnblocks.com",
+    title: "Parcel Delivery System",
   },
   sections = defaultSections,
-  description = "A collection of components for your startup business or side project.",
+  description = "Your trusted delivery system.",
   socialLinks = defaultSocialLinks,
-  copyright = "© 2024 Shadcnblocks.com. All rights reserved.",
+  copyright = "© 2024 Md.Abdullah al sadid All rights reserved.",
   legalLinks = defaultLegalLinks,
 }: Footer7Props) {
   return (

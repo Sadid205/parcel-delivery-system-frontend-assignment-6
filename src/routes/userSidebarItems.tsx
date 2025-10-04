@@ -39,13 +39,13 @@ export const userSidebarItems: MenuItem[] = [
         url: "/user/history",
         Component: History,
       },
-      {
-        title: "Cancel Parcel",
-        description: "",
-        icon: <BanIcon className="size-5 shrink-0" />,
-        url: "/user/cancel-parcel",
-        Component: CreateParcel,
-      },
+      // {
+      //   title: "Cancel Parcel",
+      //   description: "",
+      //   icon: <BanIcon className="size-5 shrink-0" />,
+      //   url: "/user/cancel-parcel",
+      //   Component: CreateParcel,
+      // },
       {
         title: "Track Parcel",
         description: "",

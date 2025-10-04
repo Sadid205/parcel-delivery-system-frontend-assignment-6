@@ -3,13 +3,7 @@ import GetAssignedParcel from "@/pages/DeliveryMan/GetAssignedParcel";
 import SendParcelOtp from "@/pages/DeliveryMan/SendParcelOtp";
 import VerifyParcelOtp from "@/pages/DeliveryMan/VerifyParcelOtp";
 
-import {
-
-  MapPinCheckIcon,
-  Send,
-  ShieldCheck,
-
-} from "lucide-react";
+import { MapPinCheckIcon, Send, ShieldCheck } from "lucide-react";
 export const deliveryManSidebarItems: MenuItem[] = [
   {
     title: "Home",
@@ -30,20 +24,20 @@ export const deliveryManSidebarItems: MenuItem[] = [
         url: "/delivery-man/assigned-parcels",
         Component: GetAssignedParcel,
       },
-      {
-        title: "Send Otp",
-        description: "",
-        icon: <Send className="size-5 shrink-0" />,
-        url: "/delivery-man/send-otp",
-        Component: SendParcelOtp,
-      },
-      {
-        title: "Verify Parcel",
-        description: "",
-        icon: <ShieldCheck className="size-5 shrink-0" />,
-        url: "/delivery-man/verify-parcel",
-        Component: VerifyParcelOtp,
-      },
+      // {
+      //   title: "Send Otp",
+      //   description: "",
+      //   icon: <Send className="size-5 shrink-0" />,
+      //   url: "/delivery-man/send-otp",
+      //   Component: SendParcelOtp,
+      // },
+      // {
+      //   title: "Verify Parcel",
+      //   description: "",
+      //   icon: <ShieldCheck className="size-5 shrink-0" />,
+      //   url: "/delivery-man/verify-parcel",
+      //   Component: VerifyParcelOtp,
+      // },
     ],
   },
 ];
