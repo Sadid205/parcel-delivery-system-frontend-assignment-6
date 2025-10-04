@@ -96,6 +96,25 @@ export const parcelApi = baseApi.injectEndpoints({
       },
       providesTags: ["PARCEL"],
     }),
+    getAssignedParcel: builder.query({
+      query: ({ searchTerm, page, limit }) => {
+        let url = `/parcel/assigned-parcel`;
+
+        const params = new URLSearchParams();
+        if (searchTerm && searchTerm.trim() !== "")
+          params.append("searchTerm", searchTerm);
+        if (page != null) params.append("page", page.toString());
+        if (limit != null) params.append("limit", limit.toString());
+        if ([...params].length > 0) {
+          url += `?${params.toString()}`;
+        }
+        return {
+          url,
+          method: "GET",
+        };
+      },
+      providesTags: ["PARCEL"],
+    }),
     cancelParcel: builder.mutation({
       query: (tracking_number: string) => ({
         url: `/parcel/cancel/${tracking_number}`,
@@ -122,4 +141,5 @@ export const {
   useLazyGetParcelQuery,
   useUpdateParcelStatusMutation,
   useAssignParcelMutation,
+  useLazyGetAssignedParcelQuery,
 } = parcelApi;

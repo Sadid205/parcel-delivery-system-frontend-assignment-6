@@ -69,3 +69,45 @@ export interface TrackingEvent {
   createdAt: string;
   updatedAt: string;
 }
+
+/// Assigned Parcel
+
+export interface IAssignedParcel {
+  _id: string;
+  sender: string;
+  receiver: Receiver;
+  tracking_number: string;
+  weight: number;
+  fees: number;
+  delivery_date: string;
+  current_status: CurrentStatus;
+  trackingEvents: TrackingEvent[];
+  parcel_type: string;
+  createdAt: string;
+  updatedAt: string;
+  assignedTo: string;
+}
+
+export interface Receiver {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  _id: string;
+}
+
+export interface CurrentStatus {
+  _id: string;
+  status: string;
+  paid_status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TrackingEvent {
+  status: string;
+  paid_status: string;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+}
