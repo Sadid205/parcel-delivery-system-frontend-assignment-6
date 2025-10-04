@@ -18,7 +18,24 @@ export const userApi = baseApi.injectEndpoints({
       },
       providesTags: ["USER"],
     }),
+    updateUser: builder.mutation<
+      null,
+      {
+        id: string;
+        userData: {
+          role: "ADMIN" | "DELIVERY_MAN" | "USER" | "SUPER_ADMIN";
+          isActive: "ACTIVE" | "INACTIVE" | "BLOCKED";
+        };
+      }
+    >({
+      query: ({ id, userData }) => ({
+        url: `/user/${id}`,
+        method: "PATCH",
+        data: userData,
+      }),
+      invalidatesTags: ["USER"],
+    }),
   }),
 });
 
-export const { useLazyAllUsersQuery } = userApi;
+export const { useLazyAllUsersQuery, useUpdateUserMutation } = userApi;

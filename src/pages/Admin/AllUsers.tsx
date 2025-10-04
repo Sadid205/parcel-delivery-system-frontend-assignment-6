@@ -61,17 +61,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useLazyAllUsersQuery } from "@/redux/features/user/user.api";
+import {
+  useLazyAllUsersQuery,
+  useUpdateUserMutation,
+} from "@/redux/features/user/user.api";
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import GlobalLoader from "@/components/Layout/GlobalLoader";
 import { DateTime } from "luxon";
-import { useUpdateParcelStatusMutation } from "@/redux/features/parcel/parcel.api";
 import type { IUser } from "@/types/user.type";
+import { useAssignParcelMutation } from "@/redux/features/parcel/parcel.api";
 export default function AllUsers() {
-  const [updateParcelStatus, { isLoading: updateStatusLoading }] =
-    useUpdateParcelStatusMutation();
+  const [updateUserRole, { isLoading: updateUserLoading }] =
+    useUpdateUserMutation();
+  const [assign, { isLoading: assignLoading }] = useAssignParcelMutation();
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [query, setQuery] = useState({
@@ -85,44 +89,75 @@ export default function AllUsers() {
   useEffect(() => {
     fetchUsers(query);
   }, []);
-
+  const roles = ["ADMIN", "DELIVERY_MAN", "USER", "SUPER_ADMIN"];
+  const activeStatus = ["ACTIVE", "INACTIVE", "BLOCKED"];
   console.log(allUsersData, query);
 
-  const FormSchema = z.object({});
+  const FormSchema = z.object({
+    role: z.enum(roles),
+    isActive: z.enum(activeStatus),
+    id: z.string(),
+  });
+  const AssignParcelSchema = z.object({
+    id: z.string(),
+    tracking_number: z.string().regex(/^TRK-\d{13}-\d{3}$/, {
+      message:
+        "Invalid Tracking Number Format. Expected: TRK-<13digits>-<3digits>",
+    }),
+  });
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  const form2 = useForm<z.infer<typeof AssignParcelSchema>>({
+    resolver: zodResolver(AssignParcelSchema),
+  });
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const updateParcelData = {
-      status: data.status,
-      paid_status: data.paid_status,
-      delivery_date: DateTime.fromJSDate(data.delivery_date)
-        .setZone("Asia/Dhaka")
-        .toFormat("yyyy-MM-dd"),
+    const updateUserData = {
+      id: data.id,
+      role: data.role as "ADMIN" | "DELIVERY_MAN" | "USER" | "SUPER_ADMIN",
+      isActive: data.isActive as "ACTIVE" | "INACTIVE" | "BLOCKED",
     };
-    console.log(updateParcelData);
-    console.log({ id: data.id });
-    const toastId = toast.loading("Parcel status is updating...");
+    console.log(updateUserData);
+    const toastId = toast.loading("User role is updating...");
     try {
-      const res = await updateParcelStatus({
-        tracking_number: data.id,
-        parcel_status: updateParcelData,
+      const res = await updateUserRole({
+        id: data.id,
+        userData: {
+          role: updateUserData.role,
+          isActive: updateUserData.isActive,
+        },
       });
       console.log(res);
-      if (res?.error?.data?.success === false) {
-        toast.error(res?.error?.data?.message, { id: toastId });
-      } else if (res?.data?.success === true) {
+      if (res?.data?.success === true) {
         toast.success(res?.data?.message, { id: toastId });
       } else {
-        toast.error("Something went wrong!", { id: toastId });
+        toast.success("Something went wrong!", { id: toastId });
       }
-      setOpen(false);
     } catch (err: any) {
       console.log(err);
       setOpen(false);
     }
   };
-
+  const onSubmit2 = async (data: z.infer<typeof AssignParcelSchema>) => {
+    const toastId = toast.loading("Assigning parcel...");
+    try {
+      console.log(data);
+      const res = await assign(data);
+      console.log(res);
+      if (res?.error?.status == 400) {
+        toast.error(res?.error?.data?.message, { id: toastId });
+        form2.setError("tracking_number", {
+          type: "server",
+          message: res?.error?.data?.message,
+        });
+      } else {
+        toast.success("Successfully assigned.", { id: toastId });
+      }
+    } catch (err: any) {
+      console.log(err);
+      toast.error("Something went wrong", { id: toastId });
+    }
+  };
   return (
     <>
       {isLoading ? (
@@ -157,7 +192,7 @@ export default function AllUsers() {
                 <TableHead>Deleted Status</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Active Status</TableHead>
-                <TableHead>Assigned Parcels</TableHead>
+                <TableHead>Assign Parcel</TableHead>
                 <TableHead className="">Update User</TableHead>
               </TableRow>
             </TableHeader>
@@ -182,28 +217,48 @@ export default function AllUsers() {
                       {user.isDeleted ? "Deleted" : "Not Deleted"}
                     </TableCell>
                     <TableCell className="">{user.email}</TableCell>
+                    <TableCell className="">{user.isActive}</TableCell>
                     <TableCell className="">
-                      {user.isActive ? "Active" : "Disabled"}
-                    </TableCell>
-                    <TableCell className="">
-                      <Dialog open={open2} onOpenChange={setOpen2}>
+                      <Dialog
+                        onOpenChange={(open) => {
+                          if (open) {
+                            form2.reset({
+                              id: user._id,
+                              tracking_number: "",
+                            });
+                          }
+                        }}
+                      >
                         <DialogTrigger asChild>
                           <Button
                             className="cursor-pointer"
-                            // disabled={user.role != "DELIVERY_MAN"}
+                            disabled={user.role != "DELIVERY_MAN"}
                             variant="outline"
                           >
-                            See
+                            Assign
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[625px]">
-                          <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <DialogContent className="sm:max-w-[300px]">
+                          <Form {...form2}>
+                            <form onSubmit={form2.handleSubmit(onSubmit2)}>
                               <DialogHeader>
-                                <DialogTitle>Change Parcel Status</DialogTitle>
+                                <DialogTitle>Assign Parcel</DialogTitle>
                               </DialogHeader>
                               <div className="flex mt-4 justify-between">
-                                <h1>Hello</h1>
+                                <FormField
+                                  control={form2.control}
+                                  name="tracking_number"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <Input
+                                        {...field}
+                                        type="string"
+                                        placeholder="Tracking Id"
+                                      />
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
                               </div>
                               <DialogFooter className="mt-4">
                                 <DialogClose asChild>
@@ -215,10 +270,10 @@ export default function AllUsers() {
                                   type="submit"
                                   className="cursor-pointer"
                                 >
-                                  {updateStatusLoading ? (
+                                  {updateUserLoading ? (
                                     <GlobalLoader />
                                   ) : (
-                                    "Update Status"
+                                    "Assign"
                                   )}
                                 </Button>
                               </DialogFooter>
@@ -228,18 +283,79 @@ export default function AllUsers() {
                       </Dialog>
                     </TableCell>
                     <TableCell className="">
-                      <Dialog open={open} onOpenChange={setOpen}>
+                      <Dialog
+                        onOpenChange={(open) => {
+                          if (open) {
+                            form.reset({
+                              id: user._id,
+                              role: user.role,
+                              isActive: user.isActive,
+                            });
+                          }
+                        }}
+                      >
                         <DialogTrigger asChild>
-                          <Button variant="outline">Update User</Button>
+                          <Button variant="outline">Change Role</Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[625px]">
+                        <DialogContent className="sm:max-w-[425px]">
                           <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)}>
                               <DialogHeader>
-                                <DialogTitle>Change Parcel Status</DialogTitle>
+                                <DialogTitle>Change User Role</DialogTitle>
                               </DialogHeader>
                               <div className="flex mt-4 justify-between">
-                                <h1>Hello</h1>
+                                <FormField
+                                  control={form.control}
+                                  name="role"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Select a paid status" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          {roles.map((r, index) => (
+                                            <SelectItem key={index} value={r}>
+                                              {r}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="isActive"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Select a status" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          {activeStatus.map((a, index) => (
+                                            <SelectItem key={index} value={a}>
+                                              {a}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
                               </div>
                               <DialogFooter className="mt-4">
                                 <DialogClose asChild>
@@ -251,10 +367,10 @@ export default function AllUsers() {
                                   type="submit"
                                   className="cursor-pointer"
                                 >
-                                  {updateStatusLoading ? (
+                                  {updateUserLoading ? (
                                     <GlobalLoader />
                                   ) : (
-                                    "Update Status"
+                                    "Update Role"
                                   )}
                                 </Button>
                               </DialogFooter>
@@ -286,7 +402,7 @@ export default function AllUsers() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      allUsers?.meta?.page > 1
+                      allUsersData?.meta?.page > 1
                         ? prevState.page - 1
                         : prevState.page,
                   };
@@ -308,7 +424,7 @@ export default function AllUsers() {
                   const newQuery = {
                     ...prevState,
                     page:
-                      allUsers?.meta?.totalPage > prevState.page
+                      allUsersData?.meta?.totalPage > prevState.page
                         ? prevState.page + 1
                         : prevState.page,
                   };

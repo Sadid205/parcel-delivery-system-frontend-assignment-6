@@ -10,6 +10,16 @@ export const parcelApi = baseApi.injectEndpoints({
         data: parcelInfo,
       }),
     }),
+    assignParcel: builder.mutation<
+      null,
+      { id: string; tracking_number: string }
+    >({
+      query: ({ id, tracking_number }) => ({
+        url: `/parcel/assign/${id}`,
+        method: "POST",
+        data: { tracking_number },
+      }),
+    }),
     updateParcel: builder.mutation<
       null,
       { id: string; parcelInfo: IUpdateParcel }
@@ -111,4 +121,5 @@ export const {
   useGetParcelQuery,
   useLazyGetParcelQuery,
   useUpdateParcelStatusMutation,
+  useAssignParcelMutation,
 } = parcelApi;
