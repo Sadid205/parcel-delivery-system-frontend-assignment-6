@@ -1,22 +1,7 @@
 import type { MenuItem } from "@/components/Layout/Navbar";
 import AllUsers from "@/pages/Admin/AllUsers";
-import AssignParcel from "@/pages/Admin/AssignParcel";
 import GetAllParcels from "@/pages/Admin/GetAllParcels";
-import GetSingleParcel from "@/pages/Admin/GetSingleParcel";
-import GetSingleUser from "@/pages/Admin/GetSingleUser";
-import UpdateParcelStatus from "@/pages/Admin/UpdateParcelStatus";
-import UpdateUser from "@/pages/Admin/UpdateUser";
-import Home from "@/pages/Public/Home";
-import Me from "@/pages/Public/Me";
-import {
-  Scan,
-  ShoppingBag,
-  PencilOff,
-  FileSearch,
-  UserRoundPlus,
-  UsersIcon,
-  PencilRuler,
-} from "lucide-react";
+import { ShoppingBag, UsersIcon } from "lucide-react";
 export const adminSidebarItems: MenuItem[] = [
   {
     title: "Home",

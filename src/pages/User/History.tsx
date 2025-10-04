@@ -20,21 +20,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCancelParcelMutation, useLazyGetParcelQuery } from "@/redux/features/parcel/parcel.api";
+import {
+  useCancelParcelMutation,
+  useLazyGetHistoryQuery,
+} from "@/redux/features/parcel/parcel.api";
 import type { IHistory } from "@/types/parcel.type";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function History() {
-  const [cancel,{isLoading:cancelLoading}] = useCancelParcelMutation()
+  const [cancel, { isLoading: cancelLoading }] = useCancelParcelMutation();
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,
     limit: 10,
   });
 
-  const [fetchParcel, { data: parcels, isLoading }] =
-    useLazyGetParcelQuery();
+  const [fetchParcel, { data: parcels, isLoading }] = useLazyGetHistoryQuery();
   useEffect(() => {
     fetchParcel(query);
   }, []);
@@ -45,18 +47,18 @@ export default function History() {
     (acc: number, curr: IHistory) => acc + curr.fees,
     0
   );
-  const cancelHandler  = async(tracking_number:string)=>{
-    const toastId = toast.loading("Canceling parcel...")
-    try{
-      const res = await cancel(tracking_number).unwrap()
+  const cancelHandler = async (tracking_number: string) => {
+    const toastId = toast.loading("Canceling parcel...");
+    try {
+      const res = await cancel(tracking_number).unwrap();
       console.log(res);
-      toast.success("Parcel canceled successfully",{id:toastId})
-      fetchParcel(query)
-    }catch(err){
+      toast.success("Parcel canceled successfully", { id: toastId });
+      fetchParcel(query);
+    } catch (err) {
       console.log(err);
-      toast.success("Failed to cancel!",{id:toastId})
+      toast.success("Failed to cancel!", { id: toastId });
     }
-  }
+  };
   return (
     <>
       {isLoading ? (
@@ -72,11 +74,12 @@ export default function History() {
               placeholder="Search"
             />
             <Button
+              className="cursor-pointer"
               onClick={() => {
                 fetchParcel(query);
               }}
             >
-              Search
+              {isLoading ? <GlobalLoader /> : "Search"}
             </Button>
           </div>
           <Table>
@@ -104,7 +107,13 @@ export default function History() {
                     <TableCell className="font-medium">
                       {history.tracking_number}
                     </TableCell>
-                    <TableCell>{history.createdAt}</TableCell>
+                    <TableCell>
+                      {new Date(history.createdAt).toLocaleString("en", {
+                        timeZone: "Asia/Dhaka",
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </TableCell>
                     <TableCell className="font-medium">
                       {history.parcel_type}
                     </TableCell>
@@ -130,11 +139,11 @@ export default function History() {
                     <TableCell className="">৳ {history.fees}</TableCell>
                     <TableCell className="">
                       <Button
-                      onClick={()=>cancelHandler(history.tracking_number)}
+                        onClick={() => cancelHandler(history.tracking_number)}
                         disabled={history.current_status.status != "REQUESTED"}
                         className="bg-green-500 cursor-pointer"
                       >
-                       {cancelLoading?<GlobalLoader/>:"Cancel"}
+                        Cancel
                       </Button>
                     </TableCell>
                   </TableRow>

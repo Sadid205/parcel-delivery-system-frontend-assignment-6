@@ -1,9 +1,7 @@
 import type { MenuItem } from "@/components/Layout/Navbar";
 import GetAssignedParcel from "@/pages/DeliveryMan/GetAssignedParcel";
-import SendParcelOtp from "@/pages/DeliveryMan/SendParcelOtp";
-import VerifyParcelOtp from "@/pages/DeliveryMan/VerifyParcelOtp";
 
-import { MapPinCheckIcon, Send, ShieldCheck } from "lucide-react";
+import { MapPinCheckIcon } from "lucide-react";
 export const deliveryManSidebarItems: MenuItem[] = [
   {
     title: "Home",

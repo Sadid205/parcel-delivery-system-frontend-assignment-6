@@ -1,6 +1,6 @@
 export type ITotalUser = Root2[];
 
-export interface IUser {
+export interface Root2 {
   _id: string;
   name: string;
   email: string;

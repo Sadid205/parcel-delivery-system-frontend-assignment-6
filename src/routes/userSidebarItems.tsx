@@ -1,17 +1,8 @@
 import type { MenuItem } from "@/components/Layout/Navbar";
-import Home from "@/pages/Public/Home";
-import Me from "@/pages/Public/Me";
 import CreateParcel from "@/pages/User/CreateParcel";
 import History from "@/pages/User/History";
 import TrackParcel from "@/pages/User/TrackParcel";
-import {
-  FilePlus,
-  HistoryIcon,
-  BanIcon,
-  TruckElectricIcon,
-  HomeIcon,
-  User2Icon,
-} from "lucide-react";
+import { FilePlus, HistoryIcon, TruckElectricIcon } from "lucide-react";
 export const userSidebarItems: MenuItem[] = [
   {
     title: "Home",

@@ -1,47 +1,20 @@
 // import GlobalLoader from "@/components/Layout/GlobalLoader";
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
-import { ChevronDownIcon } from "lucide-react";
-
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // import { toast } from "sonner"
-import { z } from "zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -64,38 +37,28 @@ import {
   useLazyGetAssignedParcelQuery,
   useVerifyParcelOtpMutation,
 } from "@/redux/features/parcel/parcel.api";
-import {
-  useLazyAllUsersQuery,
-  useUpdateUserMutation,
-} from "@/redux/features/user/user.api";
+import { z } from "zod";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import GlobalLoader from "@/components/Layout/GlobalLoader";
-import { DateTime } from "luxon";
-import type { IUser } from "@/types/user.type";
-import { useAssignParcelMutation } from "@/redux/features/parcel/parcel.api";
-import { useSendParcelOtpMutation } from "@/redux/features/parcel/parcel.api";
-import type { IAssignedParcel } from "@/types/parcel.type";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useSendParcelOtpMutation } from "@/redux/features/parcel/parcel.api";
+import type { IAssignedParcel } from "@/types/parcel.type";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 export default function GetAssignedParcel() {
-  const [updateUserRole, { isLoading: updateUserLoading }] =
-    useUpdateUserMutation();
   const [
     fetchAssignedParcels,
     { data: assignedParcel, isLoading: assignedParcelLoading },
   ] = useLazyGetAssignedParcelQuery();
-  const [assign, { isLoading: assignLoading }] = useAssignParcelMutation();
   const [sendParcelOtp, { isLoading: sendOtpLoading }] =
     useSendParcelOtpMutation();
   const [verifyParcel, { isLoading: verifyLoading }] =
     useVerifyParcelOtpMutation();
-  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,

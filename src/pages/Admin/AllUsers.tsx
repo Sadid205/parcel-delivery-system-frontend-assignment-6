@@ -1,47 +1,27 @@
 // import GlobalLoader from "@/components/Layout/GlobalLoader";
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-
-import { ChevronDownIcon } from "lucide-react";
-
-import { Calendar } from "@/components/ui/calendar";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // import { toast } from "sonner"
-import { z } from "zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -50,6 +30,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -60,24 +47,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { z } from "zod";
 
 import {
   useLazyAllUsersQuery,
   useUpdateUserMutation,
 } from "@/redux/features/user/user.api";
 
+import GlobalLoader from "@/components/Layout/GlobalLoader";
+import { useAssignParcelMutation } from "@/redux/features/parcel/parcel.api";
+import type { IUser } from "@/types/user.type";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import GlobalLoader from "@/components/Layout/GlobalLoader";
-import { DateTime } from "luxon";
-import type { IUser } from "@/types/user.type";
-import { useAssignParcelMutation } from "@/redux/features/parcel/parcel.api";
 export default function AllUsers() {
   const [updateUserRole, { isLoading: updateUserLoading }] =
     useUpdateUserMutation();
   const [assign, { isLoading: assignLoading }] = useAssignParcelMutation();
   const [open, setOpen] = useState(false);
-  const [open2, setOpen2] = useState(false);
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,
@@ -270,11 +256,7 @@ export default function AllUsers() {
                                   type="submit"
                                   className="cursor-pointer"
                                 >
-                                  {updateUserLoading ? (
-                                    <GlobalLoader />
-                                  ) : (
-                                    "Assign"
-                                  )}
+                                  {assignLoading ? <GlobalLoader /> : "Assign"}
                                 </Button>
                               </DialogFooter>
                             </form>

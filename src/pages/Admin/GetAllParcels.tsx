@@ -1,27 +1,23 @@
 // import GlobalLoader from "@/components/Layout/GlobalLoader";
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 import { ChevronDownIcon } from "lucide-react";
 
@@ -34,14 +30,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // import { toast } from "sonner"
-import { z } from "zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -50,6 +38,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -60,17 +55,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { z } from "zod";
 
+import GlobalLoader from "@/components/Layout/GlobalLoader";
 import {
-  useLazyGetHistoryQuery,
   useLazyGetParcelQuery,
   useUpdateParcelStatusMutation,
 } from "@/redux/features/parcel/parcel.api";
 import type { IHistory } from "@/types/parcel.type";
+import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import GlobalLoader from "@/components/Layout/GlobalLoader";
-import { DateTime } from "luxon";
 export default function GetAllParcels() {
   const [updateParcelStatus, { isLoading: updateStatusLoading }] =
     useUpdateParcelStatusMutation();
@@ -93,18 +88,7 @@ export default function GetAllParcels() {
     (acc: number, curr: IHistory) => acc + curr.fees,
     0
   );
-  // const cancelHandler  = async(tracking_number:string)=>{
-  //   const toastId = toast.loading("Canceling parcel...")
-  //   try{
-  //     const res = await cancel(tracking_number).unwrap()
-  //     console.log(res);
-  //     toast.success("Parcel canceled successfully",{id:toastId})
-  //     fetchHistory(query)
-  //   }catch(err){
-  //     console.log(err);
-  //     toast.success("Failed to cancel!",{id:toastId})
-  //   }
-  // }
+
   const parcelStatus = [
     "REQUESTED",
     "APPROVED",
@@ -204,7 +188,13 @@ export default function GetAllParcels() {
                     <TableCell className="font-medium">
                       {history.tracking_number}
                     </TableCell>
-                    <TableCell>{history.createdAt}</TableCell>
+                    <TableCell>
+                      {new Date(history.createdAt).toLocaleString("en", {
+                        timeZone: "Asia/Dhaka",
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </TableCell>
                     <TableCell className="font-medium">
                       {history.parcel_type}
                     </TableCell>
