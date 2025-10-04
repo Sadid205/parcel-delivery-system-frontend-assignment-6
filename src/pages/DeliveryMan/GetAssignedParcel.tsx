@@ -60,7 +60,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useLazyGetAssignedParcelQuery } from "@/redux/features/parcel/parcel.api";
+import {
+  useLazyGetAssignedParcelQuery,
+  useVerifyParcelOtpMutation,
+} from "@/redux/features/parcel/parcel.api";
 import {
   useLazyAllUsersQuery,
   useUpdateUserMutation,
@@ -72,7 +75,14 @@ import GlobalLoader from "@/components/Layout/GlobalLoader";
 import { DateTime } from "luxon";
 import type { IUser } from "@/types/user.type";
 import { useAssignParcelMutation } from "@/redux/features/parcel/parcel.api";
+import { useSendParcelOtpMutation } from "@/redux/features/parcel/parcel.api";
 import type { IAssignedParcel } from "@/types/parcel.type";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 export default function GetAssignedParcel() {
   const [updateUserRole, { isLoading: updateUserLoading }] =
     useUpdateUserMutation();
@@ -81,8 +91,11 @@ export default function GetAssignedParcel() {
     { data: assignedParcel, isLoading: assignedParcelLoading },
   ] = useLazyGetAssignedParcelQuery();
   const [assign, { isLoading: assignLoading }] = useAssignParcelMutation();
+  const [sendParcelOtp, { isLoading: sendOtpLoading }] =
+    useSendParcelOtpMutation();
+  const [verifyParcel, { isLoading: verifyLoading }] =
+    useVerifyParcelOtpMutation();
   const [open, setOpen] = useState(false);
-  const [open2, setOpen2] = useState(false);
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,
@@ -94,72 +107,41 @@ export default function GetAssignedParcel() {
   useEffect(() => {
     fetchAssignedParcels(query);
   }, []);
-  const roles = ["ADMIN", "DELIVERY_MAN", "USER", "SUPER_ADMIN"];
-  const activeStatus = ["ACTIVE", "INACTIVE", "BLOCKED"];
 
-  const FormSchema = z.object({
-    role: z.enum(roles),
-    isActive: z.enum(activeStatus),
-    id: z.string(),
-  });
-  const AssignParcelSchema = z.object({
-    id: z.string(),
+  const VerifyParcelSchema = z.object({
     tracking_number: z.string().regex(/^TRK-\d{13}-\d{3}$/, {
       message:
         "Invalid Tracking Number Format. Expected: TRK-<13digits>-<3digits>",
     }),
+    otp: z.string().min(6).max(6),
   });
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+
+  const form2 = useForm<z.infer<typeof VerifyParcelSchema>>({
+    resolver: zodResolver(VerifyParcelSchema),
   });
-  const form2 = useForm<z.infer<typeof AssignParcelSchema>>({
-    resolver: zodResolver(AssignParcelSchema),
-  });
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const updateUserData = {
-      id: data.id,
-      role: data.role as "ADMIN" | "DELIVERY_MAN" | "USER" | "SUPER_ADMIN",
-      isActive: data.isActive as "ACTIVE" | "INACTIVE" | "BLOCKED",
-    };
-    console.log(updateUserData);
-    const toastId = toast.loading("User role is updating...");
+  const onSubmit = async (tracking_number: string) => {
+    const toastId = toast.loading("Sending otp...");
+    console.log(tracking_number);
     try {
-      const res = await updateUserRole({
-        id: data.id,
-        userData: {
-          role: updateUserData.role,
-          isActive: updateUserData.isActive,
-        },
-      });
+      const res = await sendParcelOtp({ tracking_number }).unwrap();
       console.log(res);
-      if (res?.data?.success === true) {
-        toast.success(res?.data?.message, { id: toastId });
-      } else {
-        toast.success("Something went wrong!", { id: toastId });
-      }
+      toast.success("OTP Sent.", { id: toastId });
     } catch (err: any) {
       console.log(err);
-      setOpen(false);
+      toast.error("Something went wrong!", { id: toastId });
     }
   };
-  const onSubmit2 = async (data: z.infer<typeof AssignParcelSchema>) => {
-    const toastId = toast.loading("Assigning parcel...");
+  const onSubmit2 = async (data: z.infer<typeof VerifyParcelSchema>) => {
+    const toastId = toast.loading("Verifying parcel...");
     try {
       console.log(data);
-      const res = await assign(data);
+      const res = await verifyParcel(data).unwrap();
       console.log(res);
-      if (res?.error?.status == 400) {
-        toast.error(res?.error?.data?.message, { id: toastId });
-        form2.setError("tracking_number", {
-          type: "server",
-          message: res?.error?.data?.message,
-        });
-      } else {
-        toast.success("Successfully assigned.", { id: toastId });
-      }
+      toast.success("Verify successful", { id: toastId });
     } catch (err: any) {
       console.log(err);
-      toast.error("Something went wrong", { id: toastId });
+      form2.setError("otp", { type: "server", message: err?.data?.message });
+      toast.error(err?.data?.message, { id: toastId });
     }
   };
   return (
@@ -168,22 +150,6 @@ export default function GetAssignedParcel() {
         <LoaderComponent />
       ) : (
         <>
-          <div className="flex gap-5 max-w-md">
-            <Input
-              value={query.searchTerm}
-              onChange={(e) =>
-                setQuery({ ...query, searchTerm: e.target.value })
-              }
-              placeholder="Search"
-            />
-            <Button
-              onClick={() => {
-                fetchAssignedParcels(query);
-              }}
-            >
-              Search
-            </Button>
-          </div>
           <Table>
             <TableCaption>A list of your recent users.</TableCaption>
             <TableHeader>
@@ -248,42 +214,63 @@ export default function GetAssignedParcel() {
                     </TableCell>
 
                     <TableCell className="">
-                      {/* <Dialog
+                      <Button
+                        className="cursor-pointer"
+                        variant="outline"
+                        onClick={() => onSubmit(parcel.tracking_number)}
+                      >
+                        Send
+                      </Button>
+                    </TableCell>
+                    <TableCell className="">
+                      <Dialog
                         onOpenChange={(open) => {
                           if (open) {
                             form2.reset({
-                              id: user._id,
-                              tracking_number: "",
+                              otp: "",
+                              tracking_number: parcel.tracking_number,
                             });
                           }
                         }}
                       >
                         <DialogTrigger asChild>
-                          <Button
-                            className="cursor-pointer"
-                            disabled={user.role != "DELIVERY_MAN"}
-                            variant="outline"
-                          >
-                            Assign
+                          <Button className="cursor-pointer" variant="outline">
+                            Verify
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[300px]">
+                        <DialogContent className="sm:max-w-[425px]">
                           <Form {...form2}>
                             <form onSubmit={form2.handleSubmit(onSubmit2)}>
                               <DialogHeader>
-                                <DialogTitle>Assign Parcel</DialogTitle>
+                                <DialogTitle>Verify Parcel</DialogTitle>
                               </DialogHeader>
-                              <div className="flex mt-4 justify-between">
+                              <div className="flex justify-center mt-4 gap-4">
                                 <FormField
                                   control={form2.control}
-                                  name="tracking_number"
+                                  name="otp"
                                   render={({ field }) => (
-                                    <FormItem>
-                                      <Input
-                                        {...field}
-                                        type="string"
-                                        placeholder="Tracking Id"
-                                      />
+                                    <FormItem {...field}>
+                                      <InputOTP maxLength={6}>
+                                        <InputOTPGroup>
+                                          <InputOTPSlot index={0} />
+                                        </InputOTPGroup>
+                                        <InputOTPGroup>
+                                          <InputOTPSlot index={1} />
+                                        </InputOTPGroup>
+                                        <InputOTPGroup>
+                                          <InputOTPSlot index={2} />
+                                        </InputOTPGroup>
+                                        <InputOTPSeparator />
+                                        <InputOTPGroup>
+                                          <InputOTPSlot index={3} />
+                                        </InputOTPGroup>
+                                        <InputOTPGroup>
+                                          <InputOTPSlot index={4} />
+                                        </InputOTPGroup>
+                                        <InputOTPGroup>
+                                          <InputOTPSlot index={5} />
+                                        </InputOTPGroup>
+                                      </InputOTP>
                                       <FormMessage />
                                     </FormItem>
                                   )}
@@ -299,114 +286,17 @@ export default function GetAssignedParcel() {
                                   type="submit"
                                   className="cursor-pointer"
                                 >
-                                  {updateUserLoading ? (
+                                  {verifyLoading ? (
                                     <GlobalLoader />
                                   ) : (
-                                    "Assign"
+                                    "Verify Now"
                                   )}
                                 </Button>
                               </DialogFooter>
                             </form>
                           </Form>
                         </DialogContent>
-                      </Dialog> */}
-                    </TableCell>
-                    <TableCell className="">
-                      {/* <Dialog
-                        onOpenChange={(open) => {
-                          if (open) {
-                            form.reset({
-                              id: user._id,
-                              role: user.role,
-                              isActive: user.isActive,
-                            });
-                          }
-                        }}
-                      >
-                        <DialogTrigger asChild>
-                          <Button variant="outline">Change Role</Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
-                              <DialogHeader>
-                                <DialogTitle>Change User Role</DialogTitle>
-                              </DialogHeader>
-                              <div className="flex mt-4 justify-between">
-                                <FormField
-                                  control={form.control}
-                                  name="role"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                      >
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select a paid status" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          {roles.map((r, index) => (
-                                            <SelectItem key={index} value={r}>
-                                              {r}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="isActive"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                      >
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select a status" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          {activeStatus.map((a, index) => (
-                                            <SelectItem key={index} value={a}>
-                                              {a}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                              <DialogFooter className="mt-4">
-                                <DialogClose asChild>
-                                  <Button type="button" variant="outline">
-                                    Cancel
-                                  </Button>
-                                </DialogClose>
-                                <Button
-                                  type="submit"
-                                  className="cursor-pointer"
-                                >
-                                  {updateUserLoading ? (
-                                    <GlobalLoader />
-                                  ) : (
-                                    "Update Role"
-                                  )}
-                                </Button>
-                              </DialogFooter>
-                            </form>
-                          </Form>
-                        </DialogContent>
-                      </Dialog> */}
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 );

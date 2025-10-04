@@ -121,6 +121,21 @@ export const parcelApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    sendParcelOtp: builder.mutation({
+      query: (data: { tracking_number: string }) => ({
+        url: `/parcel/send-otp`,
+        data,
+        method: "POST",
+      }),
+    }),
+    verifyParcelOtp: builder.mutation({
+      query: (data: { tracking_number: string; otp: string }) => ({
+        url: `/parcel/verify-otp`,
+        data,
+        method: "POST",
+      }),
+      invalidatesTags: ["PARCEL"],
+    }),
     trackParcel: builder.query({
       query: (tracking_number: string) => ({
         url: `/parcel/${tracking_number}`,
@@ -142,4 +157,6 @@ export const {
   useUpdateParcelStatusMutation,
   useAssignParcelMutation,
   useLazyGetAssignedParcelQuery,
+  useSendParcelOtpMutation,
+  useVerifyParcelOtpMutation,
 } = parcelApi;
