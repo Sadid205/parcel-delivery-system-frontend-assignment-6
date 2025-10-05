@@ -19,7 +19,7 @@ export default function Home() {
     },
   };
   const image = {
-    src: "/src/assets/vecteezy_parcel-boxes-and-yellow-delivery-vans-concept-of-express_13724863.jpg",
+    src: "/public/vecteezy_parcel-boxes-and-yellow-delivery-vans-concept-of-express_13724863.jpg",
     alt: "Hero section demo image showing interface components",
   };
   return (
