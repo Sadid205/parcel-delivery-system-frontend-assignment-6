@@ -1,4 +1,5 @@
-import { cn } from "@repo/shadcn-ui/lib/utils";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { cn } from "@/lib/utils";
 import type { Experimental_GeneratedImage } from "ai";
 
 export type ImageProps = Experimental_GeneratedImage & {

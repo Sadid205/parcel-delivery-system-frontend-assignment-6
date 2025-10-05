@@ -3,31 +3,12 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-interface Hero1Props {
-  badge?: string;
-  heading: string;
-  description: string;
-  buttons?: {
-    primary?: {
-      text: string;
-      url: string;
-    };
-    secondary?: {
-      text: string;
-      url: string;
-    };
-  };
-  image: {
-    src: string;
-    alt: string;
-  };
-}
-
-export default function Home({
-  badge = "✨ Welcome",
-  heading = "Welcome To Parcel Delivery System",
-  description = "From here, you can add a parcel and deliver to others by providing some fees.",
-  buttons = {
+export default function Home() {
+  const badge = "✨ Welcome";
+  const heading = "Welcome To Parcel Delivery System";
+  const description =
+    "From here, you can add a parcel and deliver to others by providing some fees.";
+  const buttons = {
     primary: {
       text: "Discover all components",
       url: "https://www.shadcnblocks.com",
@@ -36,12 +17,11 @@ export default function Home({
       text: "View on GitHub",
       url: "https://github.com/Sadid205/parcel-delivery-system-frontend-assignment-6.git",
     },
-  },
-  image = {
+  };
+  const image = {
     src: "/src/assets/vecteezy_parcel-boxes-and-yellow-delivery-vans-concept-of-express_13724863.jpg",
     alt: "Hero section demo image showing interface components",
-  },
-}: Hero1Props) {
+  };
   return (
     <section className="py-32 container m-auto">
       <div className="container">

@@ -29,6 +29,7 @@ import {
   useUserInfoQuery,
 } from "@/redux/features/auth/auth.api";
 import { useAppDispatch } from "@/redux/hooks";
+import type { IRole } from "@/types";
 import { getSidebarItems } from "@/utils/getSidebarItems";
 import type { ComponentType } from "react";
 import { Link } from "react-router";
@@ -76,8 +77,8 @@ export default function Navbar({
     signup: { title: "Sign up", url: "/public/register" },
   },
 }: Navbar1Props) {
-  const { data, isLoading } = useUserInfoQuery(undefined);
-  const menu = getSidebarItems(data?.data?.role);
+  const { data, isLoading } = useUserInfoQuery(null);
+  const menu = getSidebarItems(data?.data?.role as IRole);
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
 

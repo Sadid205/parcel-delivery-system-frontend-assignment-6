@@ -1,3 +1,4 @@
+/* eslint-disabled @typescript-eslint/no-explicit-any */
 import GlobalLoader from "@/components/Layout/GlobalLoader";
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function History() {
-  const [cancel, { isLoading: cancelLoading }] = useCancelParcelMutation();
+  const [cancel] = useCancelParcelMutation();
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,

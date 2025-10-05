@@ -1,4 +1,3 @@
-// import GlobalLoader from "@/components/Layout/GlobalLoader";
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,14 +55,14 @@ import {
 
 import GlobalLoader from "@/components/Layout/GlobalLoader";
 import { useAssignParcelMutation } from "@/redux/features/parcel/parcel.api";
-import type { IUser } from "@/types/user.type";
+import type { IUser } from "@/types/auth.type";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 export default function AllUsers() {
   const [updateUserRole, { isLoading: updateUserLoading }] =
     useUpdateUserMutation();
   const [assign, { isLoading: assignLoading }] = useAssignParcelMutation();
-  const [open, setOpen] = useState(false);
+  const [_, setOpen] = useState(false);
   const [query, setQuery] = useState({
     searchTerm: "",
     page: 1,
@@ -106,7 +105,7 @@ export default function AllUsers() {
     console.log(updateUserData);
     const toastId = toast.loading("User role is updating...");
     try {
-      const res = await updateUserRole({
+      const res: any = await updateUserRole({
         id: data.id,
         userData: {
           role: updateUserData.role,
@@ -114,12 +113,12 @@ export default function AllUsers() {
         },
       });
       console.log(res);
-      if (res?.data?.success === true) {
+      if ((res?.data as any)?.success === true) {
         toast.success(res?.data?.message, { id: toastId });
       } else {
         toast.success("Something went wrong!", { id: toastId });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.log(err);
       setOpen(false);
     }
@@ -128,7 +127,7 @@ export default function AllUsers() {
     const toastId = toast.loading("Assigning parcel...");
     try {
       console.log(data);
-      const res = await assign(data);
+      const res: any = await assign(data);
       console.log(res);
       if (res?.error?.status == 400) {
         toast.error(res?.error?.data?.message, { id: toastId });
@@ -139,7 +138,7 @@ export default function AllUsers() {
       } else {
         toast.success("Successfully assigned.", { id: toastId });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.log(err);
       toast.error("Something went wrong", { id: toastId });
     }

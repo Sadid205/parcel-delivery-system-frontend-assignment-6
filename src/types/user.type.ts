@@ -10,7 +10,7 @@ export interface Root2 {
   isActive: string;
   isVerified: boolean;
   auths: Auth[];
-  assignedParcels: any[];
+  assignedParcels: unknown[];
   createdAt: string;
   updatedAt: string;
 }

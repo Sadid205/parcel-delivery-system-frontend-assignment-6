@@ -1,4 +1,5 @@
 // import GlobalLoader from "@/components/Layout/GlobalLoader";
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,8 +56,7 @@ export default function GetAssignedParcel() {
     fetchAssignedParcels,
     { data: assignedParcel, isLoading: assignedParcelLoading },
   ] = useLazyGetAssignedParcelQuery();
-  const [sendParcelOtp, { isLoading: sendOtpLoading }] =
-    useSendParcelOtpMutation();
+  const [sendParcelOtp] = useSendParcelOtpMutation();
   const [verifyParcel, { isLoading: verifyLoading }] =
     useVerifyParcelOtpMutation();
   const [query, setQuery] = useState({
@@ -89,7 +89,7 @@ export default function GetAssignedParcel() {
       const res = await sendParcelOtp({ tracking_number }).unwrap();
       console.log(res);
       toast.success("OTP Sent.", { id: toastId });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.log(err);
       toast.error("Something went wrong!", { id: toastId });
     }
@@ -103,7 +103,10 @@ export default function GetAssignedParcel() {
       toast.success("Verify successful", { id: toastId });
     } catch (err: any) {
       console.log(err);
-      form2.setError("otp", { type: "server", message: err?.data?.message });
+      form2.setError("otp", {
+        type: "server",
+        message: err?.data?.message,
+      });
       toast.error(err?.data?.message, { id: toastId });
     }
   };

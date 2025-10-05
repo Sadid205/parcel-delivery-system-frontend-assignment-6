@@ -1,19 +1,18 @@
-'use client';
+import { cn } from "@/lib/utils";
+import { Button } from "../../button";
 
-import { Button } from '@repo/shadcn-ui/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@repo/shadcn-ui/components/ui/tooltip';
-import { cn } from '@repo/shadcn-ui/lib/utils';
-import type { ComponentProps } from 'react';
+} from "@radix-ui/react-tooltip";
+import type { ComponentProps } from "react";
 
-export type ActionsProps = ComponentProps<'div'>;
+export type ActionsProps = ComponentProps<"div">;
 
 export const Actions = ({ className, children, ...props }: ActionsProps) => (
-  <div className={cn('flex items-center gap-1', className)} {...props}>
+  <div className={cn("flex items-center gap-1", className)} {...props}>
     {children}
   </div>
 );
@@ -28,14 +27,14 @@ export const Action = ({
   children,
   label,
   className,
-  variant = 'ghost',
-  size = 'sm',
+  variant = "ghost",
+  size = "sm",
   ...props
 }: ActionProps) => {
   const button = (
     <Button
       className={cn(
-        'size-9 p-1.5 text-muted-foreground hover:text-foreground',
+        "size-9 p-1.5 text-muted-foreground hover:text-foreground",
         className
       )}
       size={size}

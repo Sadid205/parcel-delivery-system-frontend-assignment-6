@@ -1,4 +1,3 @@
-// import GlobalLoader from "@/components/Layout/GlobalLoader";
 import LoaderComponent from "@/components/Layout/Loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -122,7 +121,7 @@ export default function GetAllParcels() {
     console.log({ id: data.id });
     const toastId = toast.loading("Parcel status is updating...");
     try {
-      const res = await updateParcelStatus({
+      const res: any = await updateParcelStatus({
         tracking_number: data.id,
         parcel_status: updateParcelData,
       });
@@ -135,7 +134,7 @@ export default function GetAllParcels() {
         toast.error("Something went wrong!", { id: toastId });
       }
       setOpen(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.log(err);
       setOpen(false);
     }

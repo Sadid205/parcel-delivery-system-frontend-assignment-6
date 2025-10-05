@@ -1,5 +1,4 @@
-// import ProfileContent from "@/components/profile-page/components/profile-content";
-import ProfileHeader from "@/components/profile-page/components/profile-header";
+import ProfileHeader from "@/components/profile-page/profile-header";
 
 export default function Me() {
   return (

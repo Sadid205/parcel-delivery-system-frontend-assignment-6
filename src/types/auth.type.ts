@@ -30,7 +30,13 @@ export interface IResetPassword {
   id: string;
 }
 
+// IUserResponse
+export interface IUserResponse {
+  data: IUser;
+}
+
 // IUser
+
 export interface IUser {
   _id: string;
   name: string;
