@@ -1,69 +1,167 @@
-# React + TypeScript + Vite
+# 📦 Parcel Delivery Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **secure, scalable, and role-based Parcel Delivery System** built with **React.js**, **Redux Toolkit**, and **RTK Query**, inspired by real-world courier services like **Pathao Courier** and **Sundarban**.  
+This application enables **Senders**, **Receivers**, and **Admins** to manage, track, and control parcel deliveries seamlessly.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features Overview
 
-## Expanding the ESLint configuration
+### 🌍 Public Landing Pages
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Home Page** – Introduces the service with a modern, responsive layout
+- **About Page** – Highlights mission, vision, and team
+- **Contact Page** – Simple inquiry form (with simulated submission)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 🔐 Authentication & Authorization
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **JWT-based Authentication**
+- **User Registration** (Sender or Receiver)
+- **Login & Logout**
+- **Role-Based Redirection** after login
+- **Persistent Login State** (Remains logged in after page refresh)
+- **Secure Password Hashing** with bcrypt (on backend)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🧭 Role-Based Dashboards
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 👤 Sender Dashboard
+
+- Create new parcel delivery requests
+- Cancel parcels (if not yet dispatched)
+- View all created parcels with real-time status logs
+
+### 📥 Receiver Dashboard
+
+- View incoming parcels assigned to you
+- Confirm parcel delivery upon receipt
+- Review delivery history with timestamps
+
+### 🛠️ Admin Dashboard
+
+- Manage all users (block/unblock)
+- Manage all parcels (update, block/unblock, assign delivery personnel)
+- Monitor and update parcel delivery statuses
+
+---
+
+## 🔍 Parcel Tracking
+
+- Every parcel has a **unique tracking ID**
+- Public users can **search parcels** by tracking ID
+- View **status timeline** with:
+  - Current status
+  - Timestamp
+  - Updated by
+  - Notes/comments
+
+---
+
+## 📊 Data Visualization & Analytics
+
+- **Overview Cards:** Total Parcels, Delivered, In Transit, Pending, Cancelled
+- **Charts:** Parcel trends & status distribution using Bar/Pie charts
+- **Paginated Parcel Tables:** Search, filter, and sort parcels
+- **Status Timeline:** Visual tracking of each parcel's journey
+- **Role-Specific Views:** Different interfaces for Senders, Receivers, and Admins
+
+---
+
+## 🧩 Core Technologies
+
+### ⚛️ Frontend
+
+- **React.js** with **TypeScript**
+- **React Router DOM** (for routing)
+- **Redux Toolkit + RTK Query** (state management & API integration)
+- **Tailwind CSS** (modern responsive UI)
+- **React Icons / Recharts / Toastify** (for icons, charts, and notifications)
+
+### ⚙️ Backend
+
+- **Node.js** + **Express.js** (RESTful API)
+- **MongoDB** + **Mongoose** (database & schema modeling)
+- **JWT** for authentication
+- **bcrypt** for password encryption
+
+---
+
+## 💡 Key Functionalities
+
+- Role-Based Access Control (RBAC)
+- Parcel Creation, Update, Cancellation, and Confirmation
+- Global Loading Indicators and Error Handling
+- Form Validation (required, numeric, positive checks)
+- Pagination and Advanced Filtering
+- Toast Notifications (success/error)
+- Responsive and Accessible UI/UX
+
+---
+
+## 📱 Responsive Design
+
+- Fully optimized for **mobile**, **tablet**, and **desktop**
+- Consistent margins, spacing, and typography
+- Accessible color contrast
+- Skeleton loaders & lazy loading for performance
+
+---
+
+## 🧠 Folder Structure (Frontend)
+
+src/
+├── components/
+├── pages/
+├── features/
+│ ├── auth/
+│ ├── parcel/
+│ ├── user/
+├── redux/
+│ ├── store.ts
+│ ├── apiSlice.ts
+├── hooks/
+├── utils/
+├── App.tsx
+└── main.tsx
+
+---
+
+## 🧾 Installation & Setup
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/Sadid205/parcel-delivery-system-frontend-assignment-6/tree/main
+
+
+
+2️⃣ Install Dependencies
+npm install
+
+3️⃣ Create Environment Variables
+
+Create a .env file and add:
+
+VITE_BASE_URL=http://localhost:5000/api/v1
+
+4️⃣ Run the Development Server
+npm run dev
+
+
+🤝 Contributing
+
+Pull requests are welcome!
+If you’d like to improve this project, feel free to fork it and submit a PR.
+
+
+🧑‍🎓 Author
+
+Md Abdullah Al Sadid
+💼 Full Stack Developer | React | Django | Node.js
+🌐 LinkedIn
+
+📧 Email:abdullahalsadid1914@gmail.com
 ```
