@@ -2,7 +2,8 @@ import type { MenuItem } from "@/components/Layout/Navbar";
 import CreateParcel from "@/pages/User/CreateParcel";
 import History from "@/pages/User/History";
 import TrackParcel from "@/pages/User/TrackParcel";
-import { FilePlus, HistoryIcon, TruckElectricIcon } from "lucide-react";
+import ViewIncomingParcel from "@/pages/User/ViewIncomingParcel";
+import { Eye, FilePlus, HistoryIcon, TruckElectricIcon } from "lucide-react";
 export const userSidebarItems: MenuItem[] = [
   {
     title: "Home",
@@ -11,6 +12,14 @@ export const userSidebarItems: MenuItem[] = [
   {
     title: "Me",
     url: "/user/me",
+  },
+  {
+    title: "About",
+    url: "/public/about",
+  },
+  {
+    title: "Contact",
+    url: "/public/contact",
   },
   {
     title: "Parcel",
@@ -24,19 +33,19 @@ export const userSidebarItems: MenuItem[] = [
         Component: CreateParcel,
       },
       {
-        title: "History",
+        title: "Created Parcel History",
         description: "",
         icon: <HistoryIcon className="size-5 shrink-0" />,
         url: "/user/history",
         Component: History,
       },
-      // {
-      //   title: "Cancel Parcel",
-      //   description: "",
-      //   icon: <BanIcon className="size-5 shrink-0" />,
-      //   url: "/user/cancel-parcel",
-      //   Component: CreateParcel,
-      // },
+      {
+        title: "Incoming Parcel",
+        description: "",
+        icon: <Eye className="size-5 shrink-0" />,
+        url: "/user/incoming-parcel",
+        Component: ViewIncomingParcel,
+      },
       {
         title: "Track Parcel",
         description: "",

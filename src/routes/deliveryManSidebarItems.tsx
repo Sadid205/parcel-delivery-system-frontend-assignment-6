@@ -12,6 +12,14 @@ export const deliveryManSidebarItems: MenuItem[] = [
     url: "/user/me",
   },
   {
+    title: "About",
+    url: "/public/about",
+  },
+  {
+    title: "Contact",
+    url: "/public/contact",
+  },
+  {
     title: "Parcel",
     url: "#",
     items: [

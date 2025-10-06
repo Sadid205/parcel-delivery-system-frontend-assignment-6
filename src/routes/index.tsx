@@ -1,4 +1,6 @@
 import App from "@/App";
+import About from "@/pages/Public/About";
+import Contact from "@/pages/Public/Contact";
 import ForgotPassword from "@/pages/Public/ForgotPassword";
 import Home from "@/pages/Public/Home";
 import Login from "@/pages/Public/Login";
@@ -53,6 +55,14 @@ export const router = createBrowserRouter([
       {
         path: "unauthorized",
         Component: Unauthorized,
+      },
+      {
+        path: "about",
+        Component: About,
+      },
+      {
+        path: "contact",
+        Component: Contact,
       },
     ],
   },
