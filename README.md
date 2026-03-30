@@ -134,7 +134,7 @@ src/
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/Sadid205/parcel-delivery-system-frontend-assignment-6/tree/main
+git clone https://github.com/Sadid205/parcel-delivery-system-frontend-assignment-6.git
 
 
 

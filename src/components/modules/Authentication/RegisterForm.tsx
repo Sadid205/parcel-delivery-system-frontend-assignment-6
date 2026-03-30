@@ -61,7 +61,7 @@ export default function RegisterForm() {
   });
   const { setError } = form;
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    console.log(data);
+    // console.log(data);
     const userInfo = {
       name: data.name,
       email: data.email,
@@ -88,7 +88,7 @@ export default function RegisterForm() {
         });
         console.log(
           e.path === "email" &&
-            e.message === `email '${data.email}' Is Already Taken`
+            e.message === `email '${data.email}' Is Already Taken`,
         );
         if (
           e.path === "email" &&
